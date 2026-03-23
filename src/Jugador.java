@@ -42,12 +42,8 @@ public class Jugador {
         }
         return resultado;
     }
-        private String getNombreCarta(int valor) {
-        return NombreCarta.values()[valor - 1].toString();
-    }
 
-        
-public String getEscaleras() {
+    public String getEscaleras() {
 
     String resultado = "";
 
@@ -67,62 +63,91 @@ public String getEscaleras() {
             }
         }
 
-        // si hay menos de 3 cartas, no puede haber escalera
-        if (contador < 3) continue;
+        if (contador >= 3) {
 
-        // ordenar
-        for (int i = 0; i < contador - 1; i++) {
-            for (int j = i + 1; j < contador; j++) {
-                if (valores[i] > valores[j]) {
-                    int aux = valores[i];
-                    valores[i] = valores[j];
-                    valores[j] = aux;
+            // ordenar
+            for (int i = 0; i < contador - 1; i++) {
+                for (int j = i + 1; j < contador; j++) {
+                    if (valores[i] > valores[j]) {
+                        int aux = valores[i];
+                        valores[i] = valores[j];
+                        valores[j] = aux;
+                    }
                 }
             }
-        }
 
-        int consecutivos = 1;
+            int consecutivos = 1;
 
-        for (int i = 0; i < contador - 1; i++) {
+            for (int i = 0; i < contador - 1; i++) {
 
-            if (valores[i] + 1 == valores[i + 1]) {
-                consecutivos++;
-            } else {
+                if (valores[i] + 1 == valores[i + 1]) {
+                    consecutivos++;
+                } else {
 
-                if (consecutivos >= 3) {
+                    if (consecutivos >= 3) {
 
-                    int inicio = valores[i - consecutivos + 1];
-                    int fin = valores[i];
+                        int inicio = valores[i - consecutivos + 1];
+                        int fin = valores[i];
 
-                    resultado += Grupo.values()[consecutivos]
-                            + " de " + pinta + " "
-                            + getNombreCarta(inicio)
-                            + " a "
-                            + getNombreCarta(fin) + "\n";
+                        resultado += Grupo.values()[consecutivos]
+                                + " de " + pinta + " "
+                                + NombreCarta.values()[inicio - 1]
+                                + " a "
+                                + NombreCarta.values()[fin - 1] + "\n";
+                    }
+
+                    consecutivos = 1;
                 }
+            }
 
-                consecutivos = 1;
+            if (consecutivos >= 3) {
+
+                int inicio = valores[contador - consecutivos];
+                int fin = valores[contador - 1];
+
+                resultado += Grupo.values()[consecutivos]
+                        + " de " + pinta + " "
+                        + NombreCarta.values()[inicio - 1]
+                        + " a "
+                        + NombreCarta.values()[fin - 1] + "\n";
             }
         }
-
-        // verificar al final (solo si hay suficientes cartas)
-        if (consecutivos >= 3 && contador >= consecutivos) {
-
-            int inicio = valores[contador - consecutivos];
-            int fin = valores[contador - 1];
-
-            resultado += Grupo.values()[consecutivos]
-                    + " de " + pinta + " "
-                    + getNombreCarta(inicio)
-                    + " a "
-                    + getNombreCarta(fin) + "\n";
-        }
     }
-
-    if (resultado.equals("")) {
-        return "No hay escaleras\n";
-    }
-
+   
     return resultado;
+}
+public int getPuntaje() {
+
+    int[] contadores = new int[NombreCarta.values().length];
+
+    for (Carta carta : cartas) {
+        contadores[carta.getNombre().ordinal()]++;
+    }
+
+    int puntaje = 0;
+
+    for (Carta carta : cartas) {
+
+        int i = carta.getNombre().ordinal();
+
+        if (contadores[i] == 1) {
+
+            int valor;
+
+            if (carta.getNombre() == NombreCarta.AS ||
+                carta.getNombre() == NombreCarta.JACK ||
+                carta.getNombre() == NombreCarta.QUEEN ||
+                carta.getNombre() == NombreCarta.KING) {
+
+                valor = 10;
+            } else {
+                valor = i + 1;
+            }
+
+            puntaje += valor;
+        }
+    }
+
+    return puntaje;
 }
 }
